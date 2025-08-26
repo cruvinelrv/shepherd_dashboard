@@ -23,7 +23,7 @@ class _DomainsPageState extends State<DomainsPage> {
   Future<void> _loadYamlData() async {
     try {
       // Precisa do pacote yaml e path
-      final yaml = await _readYamlFile('dev_tools/shepherd/domains.yaml');
+      final yaml = await _readYamlFile('../../domains.yaml');
       setState(() {
         domains = yaml['domains'] as List<dynamic>?;
         squads = yaml['squads'] as List<dynamic>?;
