@@ -5,8 +5,8 @@ import 'package:shepherd_dashboard/pages/domains_page.dart';
 import 'package:shepherd_dashboard/pages/microfrontends_page.dart';
 import 'package:shepherd_dashboard/pages/owers_page.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
