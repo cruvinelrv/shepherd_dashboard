@@ -22,11 +22,11 @@ class _DomainsPageState extends State<DomainsPage> {
 
   Future<void> _loadYamlData() async {
     try {
-      // Precisa do pacote yaml e path
-      final yaml = await _readYamlFile('../domains.yaml');
+      // Reads YAML from .shepherd/domains.yaml
+      final yaml = await _readYamlFile('.shepherd/domains.yaml');
       setState(() {
-        domains = yaml['domains'] as List<dynamic>?;
-        squads = yaml['squads'] as List<dynamic>?;
+        domains = yaml['domains'] is List ? yaml['domains'] as List<dynamic> : [];
+        squads = yaml['squads'] is List ? yaml['squads'] as List<dynamic> : [];
         error = null;
       });
     } catch (e) {
