@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadProjectPathFromDashboardYaml() async {
     try {
-      final dashboardFile = File('.shepherd/dashboard.yaml');
+      final dashboardFile = File('.shepherd/shepherd_dashboard/dashboard.yaml');
       if (dashboardFile.existsSync()) {
         final content = await dashboardFile.readAsString();
         final yaml = content.split(':');
@@ -46,8 +46,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         selectedProjectPath = dir;
       });
-      // Persist selection in dashboard.yaml
-      final dashboardYamlPath = '$dir/.shepherd/dashboard.yaml';
+      // Persist selection in dashboard.yaml inside shepherd_dashboard directory
+      final dashboardYamlPath = '.shepherd/shepherd_dashboard/dashboard.yaml';
       final file = File(dashboardYamlPath);
       await file.writeAsString('selected_project_path: "$dir"\n');
     }
