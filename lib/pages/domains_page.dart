@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'package:yaml/yaml.dart';
+import 'package:file_picker/file_picker.dart';
 
 class DomainsPage extends StatefulWidget {
   const DomainsPage({super.key});
@@ -16,17 +16,9 @@ class _DomainsPageState extends State<DomainsPage> {
   List<dynamic>? squads;
   String? error;
 
-  Future<void> _pickProjectDirectory() async {
-    String? selectedDir = await FilePicker.platform.getDirectoryPath();
-    if (selectedDir != null) {
-      setState(() {
-        projectPath = selectedDir;
-        domains = null;
-        squads = null;
-        error = null;
-      });
-      await _loadYamlData();
-    }
+  @override
+  void initState() {
+    super.initState();
   }
 
   Future<void> _loadYamlData() async {
@@ -50,12 +42,30 @@ class _DomainsPageState extends State<DomainsPage> {
     }
   }
 
+  Future<Map<String, dynamic>> _readYamlFile(String path) async {
+    final file = File(path);
+    final content = await file.readAsString();
+    final yamlMap = loadYaml(content);
+    return Map<String, dynamic>.from(yamlMap);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: _pickProjectDirectory,
+          onPressed: () async {
+            String? selectedDir = await FilePicker.platform.getDirectoryPath();
+            if (selectedDir != null) {
+              setState(() {
+                projectPath = selectedDir;
+                domains = null;
+                squads = null;
+                error = null;
+              });
+              await _loadYamlData();
+            }
+          },
           child: const Text('Select Shepherd Project Directory'),
         ),
         if (projectPath != null)
