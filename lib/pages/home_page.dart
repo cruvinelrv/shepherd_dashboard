@@ -5,6 +5,7 @@ import 'package:shepherd_dashboard/pages/microfrontends_page.dart';
 import 'package:shepherd_dashboard/pages/owers_page.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,9 +23,15 @@ class _HomePageState extends State<HomePage> {
     _loadProjectPathFromDashboardYaml();
   }
 
+  Future<String> _getDashboardYamlPath() async {
+    final dir = await getApplicationDocumentsDirectory();
+    return '${dir.path}/dashboard.yaml';
+  }
+
   Future<void> _loadProjectPathFromDashboardYaml() async {
     try {
-      final dashboardFile = File('.shepherd/shepherd_dashboard/dashboard.yaml');
+      final dashboardYamlPath = await _getDashboardYamlPath();
+      final dashboardFile = File(dashboardYamlPath);
       if (dashboardFile.existsSync()) {
         final content = await dashboardFile.readAsString();
         final yaml = content.split(':');
@@ -46,8 +53,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         selectedProjectPath = dir;
       });
-      // Persist selection in dashboard.yaml inside shepherd_dashboard directory
-      final dashboardYamlPath = '.shepherd/shepherd_dashboard/dashboard.yaml';
+      // Persist selection in dashboard.yaml in app's documents directory
+      final dashboardYamlPath = await _getDashboardYamlPath();
       final file = File(dashboardYamlPath);
       await file.writeAsString('selected_project_path: "$dir"\n');
     }
