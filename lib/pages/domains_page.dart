@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:yaml/yaml.dart';
-import 'package:file_picker/file_picker.dart';
 
 class DomainsPage extends StatefulWidget {
   const DomainsPage({super.key});
@@ -19,13 +18,37 @@ class _DomainsPageState extends State<DomainsPage> {
   @override
   void initState() {
     super.initState();
+    _loadProjectPathAndYaml();
   }
 
-  Future<void> _loadYamlData() async {
-    if (projectPath == null) return;
-    final yamlPath = '$projectPath/.shepherd/domains.yaml';
+  Future<void> _loadProjectPathAndYaml() async {
     try {
+      // Read dashboard.yaml to get selected_project_path
+      final dashboardFile = File('.shepherd/dashboard.yaml');
+      if (!dashboardFile.existsSync()) {
+        setState(() {
+          error = 'dashboard.yaml not found.';
+        });
+        return;
+      }
+      final dashboardContent = await dashboardFile.readAsString();
+      final dashboardYaml = loadYaml(dashboardContent);
+      final selectedPath = dashboardYaml['selected_project_path']?.toString();
+      if (selectedPath == null || selectedPath.isEmpty) {
+        setState(() {
+          error = 'No project path selected.';
+        });
+        return;
+      }
+      projectPath = selectedPath;
+      final yamlPath = '$projectPath/.shepherd/domains.yaml';
       final file = File(yamlPath);
+      if (!file.existsSync()) {
+        setState(() {
+          error = 'domains.yaml not found.';
+        });
+        return;
+      }
       final content = await file.readAsString();
       final yamlMap = loadYaml(content);
       setState(() {
@@ -42,32 +65,12 @@ class _DomainsPageState extends State<DomainsPage> {
     }
   }
 
-  Future<Map<String, dynamic>> _readYamlFile(String path) async {
-    final file = File(path);
-    final content = await file.readAsString();
-    final yamlMap = loadYaml(content);
-    return Map<String, dynamic>.from(yamlMap);
-  }
+  // ...existing code...
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ElevatedButton(
-          onPressed: () async {
-            String? selectedDir = await FilePicker.platform.getDirectoryPath();
-            if (selectedDir != null) {
-              setState(() {
-                projectPath = selectedDir;
-                domains = null;
-                squads = null;
-                error = null;
-              });
-              await _loadYamlData();
-            }
-          },
-          child: const Text('Select Shepherd Project Directory'),
-        ),
         if (projectPath != null)
           Padding(padding: const EdgeInsets.all(8.0), child: Text('Selected: $projectPath')),
         Expanded(
@@ -75,7 +78,7 @@ class _DomainsPageState extends State<DomainsPage> {
               error != null
                   ? Center(child: Text('Error: $error'))
                   : domains == null
-                  ? const Center(child: Text('Select a project directory to load data.'))
+                  ? const Center(child: Text('Loading...'))
                   : ListView(
                     children: [
                       if (domains!.isNotEmpty) ...[
