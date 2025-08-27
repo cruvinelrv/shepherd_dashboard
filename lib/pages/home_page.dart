@@ -16,6 +16,30 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String? selectedProjectPath;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadProjectPathFromDashboardYaml();
+  }
+
+  Future<void> _loadProjectPathFromDashboardYaml() async {
+    try {
+      final dashboardFile = File('.shepherd/dashboard.yaml');
+      if (dashboardFile.existsSync()) {
+        final content = await dashboardFile.readAsString();
+        final yaml = content.split(':');
+        if (yaml.length > 1) {
+          final path = yaml[1].trim().replaceAll('"', '');
+          if (path.isNotEmpty) {
+            setState(() {
+              selectedProjectPath = path;
+            });
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
   Future<void> _selectProjectDirectory() async {
     String? dir = await FilePicker.platform.getDirectoryPath();
     if (dir != null) {
