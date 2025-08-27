@@ -1,4 +1,3 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:shepherd_dashboard/pages/change_log_page.dart';
 import 'package:shepherd_dashboard/pages/domains_page.dart';
@@ -24,7 +23,7 @@ class _HomePageState extends State<HomePage> {
         selectedProjectPath = dir;
       });
       // Persist selection in dashboard.yaml
-      final dashboardYamlPath = '${dir}/.shepherd/dashboard.yaml';
+      final dashboardYamlPath = '$dir/.shepherd/dashboard.yaml';
       final file = File(dashboardYamlPath);
       await file.writeAsString('selected_project_path: "$dir"\n');
     }
@@ -39,8 +38,8 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              child: const Text('Select Shepherd Project Directory'),
               onPressed: _selectProjectDirectory,
+              child: const Text('Select Shepherd Project Directory'),
             ),
             if (selectedProjectPath != null)
               Padding(
@@ -48,17 +47,18 @@ class _HomePageState extends State<HomePage> {
                 child: Text('Selected: $selectedProjectPath'),
               ),
             ElevatedButton(
-              child: const Text('Domains'),
               onPressed:
                   selectedProjectPath == null
                       ? null
                       : () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const DomainsPage()),
+                        MaterialPageRoute(
+                          builder: (_) => DomainsPage(projectPath: selectedProjectPath!),
+                        ),
                       ),
+              child: const Text('Domains'),
             ),
             ElevatedButton(
-              child: const Text('Owners'),
               onPressed:
                   selectedProjectPath == null
                       ? null
@@ -66,9 +66,9 @@ class _HomePageState extends State<HomePage> {
                         context,
                         MaterialPageRoute(builder: (_) => const OwersPage()),
                       ),
+              child: const Text('Owners'),
             ),
             ElevatedButton(
-              child: const Text('Microfrontends'),
               onPressed:
                   selectedProjectPath == null
                       ? null
@@ -76,9 +76,9 @@ class _HomePageState extends State<HomePage> {
                         context,
                         MaterialPageRoute(builder: (_) => const MicrofrontendsPage()),
                       ),
+              child: const Text('Microfrontends'),
             ),
             ElevatedButton(
-              child: const Text('Changelog'),
               onPressed:
                   selectedProjectPath == null
                       ? null
@@ -86,6 +86,7 @@ class _HomePageState extends State<HomePage> {
                         context,
                         MaterialPageRoute(builder: (_) => const ChangeLogPage()),
                       ),
+              child: const Text('Changelog'),
             ),
           ],
         ),

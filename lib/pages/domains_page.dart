@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:yaml/yaml.dart';
 
 class DomainsPage extends StatefulWidget {
-  const DomainsPage({super.key});
+  final String projectPath;
+  const DomainsPage({super.key, required this.projectPath});
 
   @override
   State<DomainsPage> createState() => _DomainsPageState();
 }
 
 class _DomainsPageState extends State<DomainsPage> {
-  String? projectPath;
   List<dynamic>? domains;
   List<dynamic>? squads;
   String? error;
@@ -18,30 +18,12 @@ class _DomainsPageState extends State<DomainsPage> {
   @override
   void initState() {
     super.initState();
-    _loadProjectPathAndYaml();
+    _loadYamlData();
   }
 
-  Future<void> _loadProjectPathAndYaml() async {
+  Future<void> _loadYamlData() async {
     try {
-      // Read dashboard.yaml to get selected_project_path
-      final dashboardFile = File('.shepherd/dashboard.yaml');
-      if (!dashboardFile.existsSync()) {
-        setState(() {
-          error = 'dashboard.yaml not found.';
-        });
-        return;
-      }
-      final dashboardContent = await dashboardFile.readAsString();
-      final dashboardYaml = loadYaml(dashboardContent);
-      final selectedPath = dashboardYaml['selected_project_path']?.toString();
-      if (selectedPath == null || selectedPath.isEmpty) {
-        setState(() {
-          error = 'No project path selected.';
-        });
-        return;
-      }
-      projectPath = selectedPath;
-      final yamlPath = '$projectPath/.shepherd/domains.yaml';
+      final yamlPath = '${widget.projectPath}/.shepherd/domains.yaml';
       final file = File(yamlPath);
       if (!file.existsSync()) {
         setState(() {
@@ -71,8 +53,7 @@ class _DomainsPageState extends State<DomainsPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (projectPath != null)
-          Padding(padding: const EdgeInsets.all(8.0), child: Text('Selected: $projectPath')),
+        Padding(padding: const EdgeInsets.all(8.0), child: Text('Selected: ${widget.projectPath}')),
         Expanded(
           child:
               error != null
